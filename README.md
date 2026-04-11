@@ -19,6 +19,27 @@ Dataset musicale contenente:
 - utenti 
 - cronologia ascolti 
 
+## Preprocessing e Data Analysis
+
+Prima dell’ingestione in MongoDB, i dataset sono stati analizzati e validati tramite notebook dedicati.
+
+In particolare:
+- **music_info**: operazioni di data cleaning e gestione dei valori mancanti (in particolare sulla variabile `genre`)
+- **listening_history**: analisi esplorativa e verifica della qualità dei dati
+
+Le principali attività svolte includono:
+- analisi della struttura dei dataset (colonne, dimensioni, tipi di dato)
+- verifica di valori nulli, duplicati e inconsistenze
+- studio delle distribuzioni (es. `playcount`, con evidenza di long tail)
+- validazione delle chiavi logiche (es. `user_id` + `track_id`)
+
+I risultati hanno evidenziato dataset complessivamente consistenti e pronti per l’utilizzo, con interventi minimi di preprocessing.
+
+I dataset risultanti vengono quindi utilizzati come base per:
+- l’ingestione in MongoDB
+- la progettazione delle collezioni
+- le query e analisi successive
+
 ## Requisiti
 - Python 3.12
 - MongoDB 8.0
