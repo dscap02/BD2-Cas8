@@ -80,7 +80,7 @@ mongodb/ingestion/mongodb-ingestion.py
 Per eseguire l’ingestione:
 
 ```bash
-python mongodb/mongodb-ingestion.py --drop
+python mongodb/ingestion/mongodb-ingestion.py --drop
 ```
 
 L’opzione `--drop` elimina le collection esistenti del progetto prima di reinserire i dati.  
