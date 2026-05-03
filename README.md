@@ -37,9 +37,48 @@ I risultati hanno evidenziato dataset complessivamente consistenti e pronti per 
 
 I dataset risultanti vengono quindi utilizzati come base per:
 - l’ingestione in MongoDB
-- la progettazione delle collezioni
+- la progettazione delle collection
 - le query e analisi successive
+
+## Schema MongoDB
+
+Lo schema del database MongoDB è stato progettato a partire dai dataset preprocessati, con l’obiettivo di rappresentare in modo chiaro le entità principali del dominio musicale.
+
+Il database `music_archive` è composto da 5 collection principali:
+- `artists`
+- `genres_tags`
+- `tracks`
+- `listeners`
+- `listening_history`
+
+La progettazione utilizza principalmente riferimenti tramite `ObjectId` tra le collection, mentre le `audio_features` sono modellate come oggetto embedded all’interno dei documenti della collection `tracks`.
+
+La documentazione completa dello schema, con descrizione delle collection, campi, relazioni e scelte di modellazione, è disponibile in:
+
+[`mongodb/README.md`](mongodb/README.md)
+
+## Data Ingestion
+
+L’ingestione dei dati in MongoDB viene eseguita tramite uno script Python dedicato, che legge i dataset preprocessati e popola il database secondo lo schema definito.
+
+Lo script crea e popola le collection nel seguente ordine:
+1. `artists`
+2. `genres_tags`
+3. `tracks`
+4. `listeners`
+5. `listening_history`
+
+Questo ordine rispetta le dipendenze tra documenti, poiché `tracks` referenzia `artists` e `genres_tags`, mentre `listening_history` referenzia `listeners` e `tracks`.
+
+La documentazione completa della procedura di ingestione, con comandi di esecuzione, verifica delle collection, controllo dei riferimenti e indici creati, è disponibile in:
+
+[`mongodb/ingestion/README.md`](mongodb/ingestion/README.md)
 
 ## Requisiti
 - Python 3.12
 - MongoDB 8.0
+
+Eseguire questo comando per scaricare i pacchetti di python necessari
+```bash 
+pip install -r requirements.txt
+```
