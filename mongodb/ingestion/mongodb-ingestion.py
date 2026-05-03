@@ -1,5 +1,6 @@
 import argparse
 import os
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
@@ -7,12 +8,13 @@ from bson import ObjectId
 from pymongo import MongoClient, ASCENDING
 
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
 DEFAULT_MONGO_URI = "mongodb://localhost:27017/"
 DEFAULT_DB_NAME = "music_archive"
 
-DEFAULT_MUSIC_INFO_PATH = "../dataset/music_info_cleaned.csv"  #sostituire con proprio path del file csv music info
-DEFAULT_LISTENING_HISTORY_PATH = "../dataset/listening_history_cleaned.csv" #sostituire con proprio path del file csv listening history
-
+DEFAULT_MUSIC_INFO_PATH = PROJECT_ROOT / "dataset" / "music_info_cleaned.csv"
+DEFAULT_LISTENING_HISTORY_PATH = PROJECT_ROOT / "dataset" / "listening_history_cleaned.csv"
 
 AUDIO_FEATURE_COLUMNS = [
     "danceability",
