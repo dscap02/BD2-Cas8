@@ -74,7 +74,7 @@ mongodb://localhost:27017/
 Lo script principale si trova in:
 
 ```text
-mongodb-schema/ingestion.py
+mongodb/ingestion/mongodb-ingestion.py
 ```
 
 Per eseguire l’ingestione:
@@ -89,7 +89,7 @@ L’opzione `--drop` elimina le collection esistenti del progetto prima di reins
 In alternativa, è possibile specificare manualmente i path dei dataset:
 
 ```bash
-python scripts/ingest_mongodb.py \
+python mongodb/ingestion/mongodb-ingestion.py \
   --music-info data/processed/music_info_cleaned.csv \
   --listening-history data/processed/listening_history_cleaned.csv \
   --drop
