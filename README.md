@@ -74,6 +74,34 @@ La documentazione completa della procedura di ingestione, con comandi di esecuzi
 
 [`mongodb/ingestion/README.md`](mongodb/ingestion/README.md)
 
+## Query di analisi MongoDB
+
+Il progetto include uno script dedicato alle query di analisi sul database MongoDB `music_archive`.
+
+Lo script utilizza aggregation pipeline per analizzare le relazioni tra:
+
+- `listening_history`
+- `tracks`
+- `artists`
+- `genres_tags`
+- `listeners`
+
+Per eseguire lo script:
+
+```bash
+python mongodb/scripts/aggregation_queries.py
+```
+
+Le analisi incluse sono:
+- riepilogo del numero di documenti per collection;
+- top tracce più ascoltate;
+- top artisti più ascoltati;
+- top generi più ascoltati;
+- listener più attivi;
+- distribuzione degli ascolti per genere.
+
+Le query sono esclusivamente in lettura e non modificano i dati presenti nel database.
+
 ## Requisiti
 - Python 3.12
 - MongoDB 8.0
