@@ -1,0 +1,164 @@
+{
+  "database": "music_archive",
+  "generated_at": "2026-06-28T11:15:32.236216+00:00",
+  "read_only": true,
+  "collection_counts": {
+    "artists": 8317,
+    "genres_tags": 24235,
+    "tracks": 50683,
+    "listeners": 962037,
+    "listening_history": 9711301
+  },
+  "reference_checks": [
+    {
+      "source_collection": "tracks",
+      "source_field": "artist_id",
+      "target_collection": "artists",
+      "documents_with_reference": 50683,
+      "valid_references": 50683,
+      "invalid_references": 0,
+      "is_valid": true
+    },
+    {
+      "source_collection": "tracks",
+      "source_field": "genre_tag_id",
+      "target_collection": "genres_tags",
+      "documents_with_reference": 50683,
+      "valid_references": 50683,
+      "invalid_references": 0,
+      "is_valid": true
+    },
+    {
+      "source_collection": "listening_history",
+      "source_field": "track_id",
+      "target_collection": "tracks",
+      "documents_with_reference": 9711301,
+      "valid_references": 9711301,
+      "invalid_references": 0,
+      "is_valid": true
+    },
+    {
+      "source_collection": "listening_history",
+      "source_field": "listener_id",
+      "target_collection": "listeners",
+      "documents_with_reference": 9711301,
+      "valid_references": 9711301,
+      "invalid_references": 0,
+      "is_valid": true
+    }
+  ],
+  "required_field_checks": [
+    {
+      "collection": "artists",
+      "required_fields": [
+        "_id",
+        "name"
+      ],
+      "missing_by_field": {
+        "_id": 0,
+        "name": 0
+      },
+      "documents_with_missing_fields": 0,
+      "is_valid": true
+    },
+    {
+      "collection": "genres_tags",
+      "required_fields": [
+        "_id",
+        "genre"
+      ],
+      "missing_by_field": {
+        "_id": 0,
+        "genre": 0
+      },
+      "documents_with_missing_fields": 0,
+      "is_valid": true
+    },
+    {
+      "collection": "tracks",
+      "required_fields": [
+        "_id",
+        "track_id",
+        "name",
+        "artist_id",
+        "genre_tag_id",
+        "audio_features"
+      ],
+      "missing_by_field": {
+        "_id": 0,
+        "track_id": 0,
+        "name": 0,
+        "artist_id": 0,
+        "genre_tag_id": 0,
+        "audio_features": 0
+      },
+      "documents_with_missing_fields": 0,
+      "is_valid": true
+    },
+    {
+      "collection": "listeners",
+      "required_fields": [
+        "_id",
+        "original_user_id"
+      ],
+      "missing_by_field": {
+        "_id": 0,
+        "original_user_id": 0
+      },
+      "documents_with_missing_fields": 0,
+      "is_valid": true
+    },
+    {
+      "collection": "listening_history",
+      "required_fields": [
+        "_id",
+        "listener_id",
+        "track_id"
+      ],
+      "missing_by_field": {
+        "_id": 0,
+        "listener_id": 0,
+        "track_id": 0
+      },
+      "documents_with_missing_fields": 0,
+      "is_valid": true
+    }
+  ],
+  "duplicate_checks": [
+    {
+      "collection": "tracks",
+      "field": "track_id",
+      "duplicate_values": 0,
+      "sample_duplicate_documents": 0,
+      "samples": [],
+      "is_valid": true
+    },
+    {
+      "collection": "listeners",
+      "field": "original_user_id",
+      "duplicate_values": 0,
+      "sample_duplicate_documents": 0,
+      "samples": [],
+      "is_valid": true
+    }
+  ],
+  "audio_features_check": {
+    "missing_audio_features": 0,
+    "invalid_type": 0,
+    "is_valid": true
+  },
+  "listening_history_pair_check": {
+    "collection": "listening_history",
+    "fields": [
+      "listener_id",
+      "track_id"
+    ],
+    "duplicate_pairs": 0,
+    "is_valid": true
+  },
+  "overall_status": {
+    "status": "PASSED",
+    "is_valid": true,
+    "failed_checks": []
+  }
+}
