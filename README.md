@@ -74,32 +74,33 @@ La documentazione completa della procedura di ingestione, con comandi di esecuzi
 
 [`mongodb/ingestion/README.md`](mongodb/ingestion/README.md)
 
-## Data Validation
+## Query di analisi MongoDB
 
-Il progetto include uno script per verificare l’integrità dei documenti e dei riferimenti tra le collection MongoDB.
+Il progetto include uno script dedicato alle query di analisi sul database MongoDB `music_archive`.
 
-Per eseguire la validazione:
+Lo script utilizza aggregation pipeline per analizzare le relazioni tra:
+
+- `listening_history`
+- `tracks`
+- `artists`
+- `genres_tags`
+- `listeners`
+
+Per eseguire lo script:
 
 ```bash
-python mongodb/scripts/validate_database.py
+python mongodb/scripts/aggregation_queries.py
 ```
 
-Lo script controlla:
+Le analisi incluse sono:
+- riepilogo del numero di documenti per collection;
+- top tracce più ascoltate;
+- top artisti più ascoltati;
+- top generi più ascoltati;
+- listener più attivi;
+- distribuzione degli ascolti per genere.
 
-- validità dei riferimenti tra `tracks`, `artists` e `genres_tags`;
-- validità dei riferimenti tra `listening_history`, `tracks` e `listeners`;
-- presenza dei campi obbligatori;
-- eventuali identificativi logici duplicati;
-- struttura del campo embedded `audio_features`;
-- eventuali coppie duplicate `listener_id` e `track_id`.
-
-I risultati vengono salvati nel file:
-
-```text
-docs/mongodb-validation-results.json
-```
-
-Lo script esegue esclusivamente operazioni di lettura e non modifica i dati presenti nel database.
+Le query sono esclusivamente in lettura e non modificano i dati presenti nel database.
 
 ## Requisiti
 - Python 3.12
