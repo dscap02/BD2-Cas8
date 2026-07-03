@@ -74,6 +74,34 @@ La documentazione completa della procedura di ingestione, con comandi di esecuzi
 
 [`mongodb/ingestion/README.md`](mongodb/ingestion/README.md)
 
+## Data Validation
+
+Il progetto include uno script per verificare l’integrità dei documenti e dei riferimenti tra le collection MongoDB.
+
+Per eseguire la validazione:
+
+```bash
+python mongodb/scripts/validate_database.py
+```
+
+Lo script controlla:
+
+- validità dei riferimenti tra `tracks`, `artists` e `genres_tags`;
+- validità dei riferimenti tra `listening_history`, `tracks` e `listeners`;
+- presenza dei campi obbligatori;
+- eventuali identificativi logici duplicati;
+- struttura del campo embedded `audio_features`;
+- eventuali coppie duplicate `listener_id` e `track_id`.
+
+I risultati vengono salvati nel file:
+
+```text
+docs/mongodb-validation-results.json
+```
+
+Lo script esegue esclusivamente operazioni di lettura e non modifica i dati presenti nel database.
+
+
 ## Requisiti
 - Python 3.12
 - MongoDB 8.0
