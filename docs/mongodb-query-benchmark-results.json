@@ -1,0 +1,209 @@
+{
+  "database": "music_archive",
+  "generated_at": "2026-06-28T10:45:35.669195+00:00",
+  "read_only": true,
+  "indexes": {
+    "tracks": [
+      {
+        "name": "_id_",
+        "key": {
+          "_id": 1
+        },
+        "unique": true
+      },
+      {
+        "name": "track_id_1",
+        "key": {
+          "track_id": 1
+        },
+        "unique": true
+      },
+      {
+        "name": "artist_id_1",
+        "key": {
+          "artist_id": 1
+        },
+        "unique": false
+      },
+      {
+        "name": "genre_tag_id_1",
+        "key": {
+          "genre_tag_id": 1
+        },
+        "unique": false
+      }
+    ],
+    "listeners": [
+      {
+        "name": "_id_",
+        "key": {
+          "_id": 1
+        },
+        "unique": true
+      },
+      {
+        "name": "original_user_id_1",
+        "key": {
+          "original_user_id": 1
+        },
+        "unique": true
+      }
+    ],
+    "listening_history": [
+      {
+        "name": "_id_",
+        "key": {
+          "_id": 1
+        },
+        "unique": true
+      },
+      {
+        "name": "listener_id_1_track_id_1",
+        "key": {
+          "listener_id": 1,
+          "track_id": 1
+        },
+        "unique": true
+      },
+      {
+        "name": "track_id_1",
+        "key": {
+          "track_id": 1
+        },
+        "unique": false
+      }
+    ]
+  },
+  "sample_values": {
+    "track_object_id": "69f75a8009997e61d8229a47",
+    "listener_object_id": "69f75a8209997e61d8236042",
+    "history_track_id": "69f75a8009997e61d8229a47",
+    "history_listener_id": "69f75a8409997e61d830c115"
+  },
+  "benchmarks": [
+    {
+      "title": "Ricerca traccia tramite _id",
+      "collection": "tracks",
+      "query": {
+        "_id": "69f75a8009997e61d8229a47"
+      },
+      "limit": null,
+      "index_name": "_id_",
+      "with_index": {
+        "scan_type": "IXSCAN",
+        "stages": [
+          "FETCH",
+          "IXSCAN"
+        ],
+        "execution_time_ms": 0,
+        "documents_returned": 1,
+        "documents_examined": 1,
+        "keys_examined": 1
+      },
+      "without_index": {
+        "scan_type": "COLLSCAN",
+        "stages": [
+          "COLLSCAN"
+        ],
+        "execution_time_ms": 30,
+        "documents_returned": 1,
+        "documents_examined": 50683,
+        "keys_examined": 0
+      }
+    },
+    {
+      "title": "Ricerca listener tramite _id",
+      "collection": "listeners",
+      "query": {
+        "_id": "69f75a8209997e61d8236042"
+      },
+      "limit": null,
+      "index_name": "_id_",
+      "with_index": {
+        "scan_type": "IXSCAN",
+        "stages": [
+          "FETCH",
+          "IXSCAN"
+        ],
+        "execution_time_ms": 0,
+        "documents_returned": 1,
+        "documents_examined": 1,
+        "keys_examined": 1
+      },
+      "without_index": {
+        "scan_type": "COLLSCAN",
+        "stages": [
+          "COLLSCAN"
+        ],
+        "execution_time_ms": 130,
+        "documents_returned": 1,
+        "documents_examined": 962037,
+        "keys_examined": 0
+      }
+    },
+    {
+      "title": "Ricerca ascolti tramite track_id",
+      "collection": "listening_history",
+      "query": {
+        "track_id": "69f75a8009997e61d8229a47"
+      },
+      "limit": 1000,
+      "index_name": "track_id_1",
+      "with_index": {
+        "scan_type": "IXSCAN",
+        "stages": [
+          "LIMIT",
+          "FETCH",
+          "IXSCAN"
+        ],
+        "execution_time_ms": 0,
+        "documents_returned": 41,
+        "documents_examined": 41,
+        "keys_examined": 41
+      },
+      "without_index": {
+        "scan_type": "COLLSCAN",
+        "stages": [
+          "LIMIT",
+          "COLLSCAN"
+        ],
+        "execution_time_ms": 1152,
+        "documents_returned": 41,
+        "documents_examined": 9711301,
+        "keys_examined": 0
+      }
+    },
+    {
+      "title": "Ricerca ascolti tramite listener_id",
+      "collection": "listening_history",
+      "query": {
+        "listener_id": "69f75a8409997e61d830c115"
+      },
+      "limit": 1000,
+      "index_name": "listener_id_1_track_id_1",
+      "with_index": {
+        "scan_type": "IXSCAN",
+        "stages": [
+          "LIMIT",
+          "FETCH",
+          "IXSCAN"
+        ],
+        "execution_time_ms": 0,
+        "documents_returned": 10,
+        "documents_examined": 10,
+        "keys_examined": 10
+      },
+      "without_index": {
+        "scan_type": "COLLSCAN",
+        "stages": [
+          "LIMIT",
+          "COLLSCAN"
+        ],
+        "execution_time_ms": 1117,
+        "documents_returned": 10,
+        "documents_examined": 9711301,
+        "keys_examined": 0
+      }
+    }
+  ]
+}
