@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}
+Ricerca artisti | Music Archive
+{% endblock %}
+
+{% block content %}
+<section class="page-header mb-4">
+    <h1 class="fw-bold">Ricerca artisti</h1>
+
+    <p class="text-secondary mb-0">
+        Cerca un artista e visualizza le tracce associate.
+    </p>
+</section>
+
+<form method="get" class="search-card mb-4">
+    <div class="row g-2">
+        <div class="col-12 col-md">
+            <label for="artist-query" class="form-label">
+                Nome artista
+            </label>
+
+            <input
+                id="artist-query"
+                class="form-control"
+                type="search"
+                name="q"
+                value="{{ query }}"
+                placeholder="Inserisci il nome di un artista"
+                required
+            >
+        </div>
+
+        <div class="col-12 col-md-auto d-flex align-items-end">
+            <button
+                class="btn btn-primary w-100"
+                type="submit"
+            >
+                Cerca
+            </button>
+        </div>
+    </div>
+</form>
+
+{% if query %}
+    <p>
+        Risultati per <strong>{{ query }}</strong>:
+        {{ total_results | format_number }}
+    </p>
+
+    <section class="dashboard-card">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                <tr>
+                    <th>Artista</th>
+                    <th class="text-end">
+                        Tracce associate
+                    </th>
+                    <th></th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for artist in artists %}
+                    <tr>
+                        <td>
+                            <a
+                                class="item-link fw-semibold"
+                                href="{{ url_for('artist_detail', artist_id=artist._id) }}"
+                            >
+                                {{ artist.name }}
+                            </a>
+                        </td>
+
+                        <td class="text-end">
+                            {{ artist.track_count | format_number }}
+                        </td>
+
+                        <td class="text-end">
+                            <a
+                                class="btn btn-outline-primary btn-sm"
+                                href="{{ url_for('artist_detail', artist_id=artist._id) }}"
+                            >
+                                Visualizza tracce
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3">
+                            Nessun artista trovato.
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    {% if has_previous or has_next %}
+        <nav class="mt-4" aria-label="Paginazione artisti">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if not has_previous %}disabled{% endif %}">
+                    <a
+                        class="page-link"
+                        href="{{ url_for('artists', q=query, page=page - 1) }}"
+                    >
+                        Precedente
+                    </a>
+                </li>
+
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Pagina {{ page }}
+                    </span>
+                </li>
+
+                <li class="page-item {% if not has_next %}disabled{% endif %}">
+                    <a
+                        class="page-link"
+                        href="{{ url_for('artists', q=query, page=page + 1) }}"
+                    >
+                        Successiva
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    {% endif %}
+{% endif %}
+{% endblock %}
