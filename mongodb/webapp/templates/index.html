@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard | Music Archive
+{% endblock %}
+
+{% block content %}
+<section class="hero-section mb-5">
+    <h1 class="display-5 fw-bold">
+        Music Archive Dashboard
+    </h1>
+
+    <p class="lead mb-0">
+        Esplora le principali statistiche dell’archivio musicale
+        memorizzato in MongoDB.
+    </p>
+
+    {% if generated_at %}
+        <p class="mt-3 mb-0 small">
+            Statistiche aggiornate il:
+            <strong>
+                {{ generated_at | format_datetime }}
+            </strong>
+        </p>
+    {% endif %}
+</section>
+
+{% if counts %}
+<section class="mb-5">
+    <h2 class="section-title">
+        Riepilogo database
+    </h2>
+
+    <div class="row g-3">
+        <div class="col-12 col-md-6 col-xl">
+            <div class="stat-card">
+                <span class="stat-label">
+                    Artisti
+                </span>
+
+                <strong class="stat-value">
+                    {{ counts.artists | format_number }}
+                </strong>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl">
+            <div class="stat-card">
+                <span class="stat-label">
+                    Generi e tag
+                </span>
+
+                <strong class="stat-value">
+                    {{ counts.genres_tags | format_number }}
+                </strong>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl">
+            <div class="stat-card">
+                <span class="stat-label">
+                    Tracce
+                </span>
+
+                <strong class="stat-value">
+                    {{ counts.tracks | format_number }}
+                </strong>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl">
+            <div class="stat-card">
+                <span class="stat-label">
+                    Listener
+                </span>
+
+                <strong class="stat-value">
+                    {{ counts.listeners | format_number }}
+                </strong>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-xl">
+            <div class="stat-card">
+                <span class="stat-label">
+                    Ascolti
+                </span>
+
+                <strong class="stat-value">
+                    {{ counts.listening_history | format_number }}
+                </strong>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<div class="row g-4">
+    <div class="col-12 col-lg-6">
+        <section class="dashboard-card">
+            <h2 class="section-title">
+                Tracce più ascoltate
+            </h2>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Traccia</th>
+                        <th>Artista</th>
+                        <th class="text-end">
+                            Ascolti
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for track in top_tracks %}
+                        <tr>
+                            <td>
+                                {{ loop.index }}
+                            </td>
+
+                            <td>
+                                {{ track.track_name }}
+                            </td>
+
+                            <td>
+                                {{ track.artist_name }}
+                            </td>
+
+                            <td class="text-end">
+                                {{ track.listen_count | format_number }}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4">
+                                Nessun risultato disponibile.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <section class="dashboard-card">
+            <h2 class="section-title">
+                Artisti più ascoltati
+            </h2>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Artista</th>
+                        <th class="text-end">
+                            Ascolti
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for artist in top_artists %}
+                        <tr>
+                            <td>
+                                {{ loop.index }}
+                            </td>
+
+                            <td>
+                                {{ artist.artist_name }}
+                            </td>
+
+                            <td class="text-end">
+                                {{ artist.listen_count | format_number }}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3">
+                                Nessun risultato disponibile.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <section class="dashboard-card">
+            <h2 class="section-title">
+                Generi più ascoltati
+            </h2>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Genere</th>
+                        <th class="text-end">
+                            Ascolti
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for genre in top_genres %}
+                        <tr>
+                            <td>
+                                {{ loop.index }}
+                            </td>
+
+                            <td>
+                                {{ genre.genre }}
+                            </td>
+
+                            <td class="text-end">
+                                {{ genre.listen_count | format_number }}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3">
+                                Nessun risultato disponibile.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <section class="dashboard-card">
+            <h2 class="section-title">
+                Listener più attivi
+            </h2>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Listener</th>
+                        <th class="text-end">
+                            Ascolti
+                        </th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for listener in top_listeners %}
+                        <tr>
+                            <td>
+                                {{ loop.index }}
+                            </td>
+
+                            <td>
+                                {{ listener.listener_id }}
+                            </td>
+
+                            <td class="text-end">
+                                {{ listener.listen_count | format_number }}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3">
+                                Nessun risultato disponibile.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
