@@ -1,0 +1,188 @@
+{
+  "generated_at": "2026-07-04T12:25:40+00:00",
+  "counts": {
+    "artists": 8317,
+    "genres_tags": 24235,
+    "tracks": 50683,
+    "listeners": 962037,
+    "listening_history": 9711301
+  },
+  "top_tracks": [
+    {
+      "listen_count": 80656,
+      "track_name": "Revelry",
+      "artist_name": "Kings of Leon"
+    },
+    {
+      "listen_count": 39529,
+      "track_name": "Alejandro",
+      "artist_name": "Lady Gaga"
+    },
+    {
+      "listen_count": 30873,
+      "track_name": "Heartbreak Warfare",
+      "artist_name": "John Mayer"
+    },
+    {
+      "listen_count": 30057,
+      "track_name": "Halo",
+      "artist_name": "Depeche Mode"
+    },
+    {
+      "listen_count": 29708,
+      "track_name": "Party In The U.S.A.",
+      "artist_name": "The Barden Bellas"
+    },
+    {
+      "listen_count": 28735,
+      "track_name": "Uprising",
+      "artist_name": "Sabaton"
+    },
+    {
+      "listen_count": 28412,
+      "track_name": "Float On",
+      "artist_name": "Modest Mouse"
+    },
+    {
+      "listen_count": 27276,
+      "track_name": "Bring Me To Life",
+      "artist_name": "Katherine Jenkins"
+    },
+    {
+      "listen_count": 27222,
+      "track_name": "Sexy Bitch",
+      "artist_name": "David Guetta"
+    },
+    {
+      "listen_count": 26689,
+      "track_name": "Bitter Sweet Symphony",
+      "artist_name": "The Verve"
+    }
+  ],
+  "top_artists": [
+    {
+      "listen_count": 127959,
+      "artist_name": "The Black Keys"
+    },
+    {
+      "listen_count": 119459,
+      "artist_name": "Kings of Leon"
+    },
+    {
+      "listen_count": 93664,
+      "artist_name": "Coldplay"
+    },
+    {
+      "listen_count": 77991,
+      "artist_name": "Justin Bieber"
+    },
+    {
+      "listen_count": 74048,
+      "artist_name": "Radiohead"
+    },
+    {
+      "listen_count": 73668,
+      "artist_name": "Beirut"
+    },
+    {
+      "listen_count": 73270,
+      "artist_name": "The New Pornographers"
+    },
+    {
+      "listen_count": 69191,
+      "artist_name": "Jack Johnson"
+    },
+    {
+      "listen_count": 66962,
+      "artist_name": "Modest Mouse"
+    },
+    {
+      "listen_count": 61016,
+      "artist_name": "Metric"
+    }
+  ],
+  "top_genres": [
+    {
+      "listen_count": 5903987,
+      "genre": "Rock"
+    },
+    {
+      "listen_count": 1304635,
+      "genre": "Electronic"
+    },
+    {
+      "listen_count": 561135,
+      "genre": "Pop"
+    },
+    {
+      "listen_count": 537029,
+      "genre": "Metal"
+    },
+    {
+      "listen_count": 446063,
+      "genre": "Rap"
+    },
+    {
+      "listen_count": 229526,
+      "genre": "Country"
+    },
+    {
+      "listen_count": 171071,
+      "genre": "Folk"
+    },
+    {
+      "listen_count": 140560,
+      "genre": "RnB"
+    },
+    {
+      "listen_count": 120020,
+      "genre": "Reggae"
+    },
+    {
+      "listen_count": 98972,
+      "genre": "Jazz"
+    }
+  ],
+  "top_listeners": [
+    {
+      "listen_count": 784,
+      "listener_id": "ec6dfcf19485cb011e0b22637075037aae34cf26"
+    },
+    {
+      "listen_count": 384,
+      "listener_id": "4e11f45d732f4861772b2906f81a7d384552ad12"
+    },
+    {
+      "listen_count": 376,
+      "listener_id": "726da71c2c2ea119119a7957517fccd028d1be76"
+    },
+    {
+      "listen_count": 367,
+      "listener_id": "113255a012b2affeab62607563d03fbdf31b08e7"
+    },
+    {
+      "listen_count": 366,
+      "listener_id": "7adec7f006cb09482d36609d205293d8b61f030e"
+    },
+    {
+      "listen_count": 363,
+      "listener_id": "fef771ab021c200187a419f5e55311390f850a50"
+    },
+    {
+      "listen_count": 362,
+      "listener_id": "8cb51abc6bf8ea29341cb070fe1e1af5e4c3ffcc"
+    },
+    {
+      "listen_count": 357,
+      "listener_id": "b4c94d72b15d3c311c10045a58b31f95d9d12785"
+    },
+    {
+      "listen_count": 356,
+      "listener_id": "96f7b4f800cafef33eae71a6bc44f7139f63cd7a"
+    },
+    {
+      "listen_count": 350,
+      "listener_id": "6d625c6557df84b60d90426c0116138b617b9449"
+    }
+  ]
+}
