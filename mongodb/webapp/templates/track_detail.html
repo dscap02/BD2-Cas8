@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if track %}{{ track.name }}{% else %}Traccia{% endif %} | Music Archive
+{% endblock %}
+
+{% block content %}
+{% if track %}
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ url_for('tracks') }}">
+                    Tracce
+                </a>
+            </li>
+
+            <li class="breadcrumb-item active">
+                {{ track.name }}
+            </li>
+        </ol>
+    </nav>
+
+    <section class="detail-card">
+        <div class="row g-4">
+            <div class="col-12 col-lg-8">
+                <span class="detail-label">
+                    Traccia
+                </span>
+
+                <h1 class="display-6 fw-bold mb-3">
+                    {{ track.name }}
+                </h1>
+
+                {% if track.artist %}
+                    <p class="lead">
+                        di
+                        <a
+                            class="item-link fw-semibold"
+                            href="{{ url_for(
+                                'artist_detail',
+                                artist_id=track.artist._id
+                            ) }}"
+                        >
+                            {{ track.artist.name }}
+                        </a>
+                    </p>
+                {% endif %}
+
+                <div class="row g-3 mt-2">
+                    <div class="col-6 col-md-4">
+                        <div class="info-box">
+                            <span>Genere</span>
+                            <strong>
+                                {{ track.genre or "Non disponibile" }}
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-4">
+                        <div class="info-box">
+                            <span>Anno</span>
+                            <strong>
+                                {{ track.year or "Non disponibile" }}
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-4">
+                        <div class="info-box">
+                            <span>Durata</span>
+                            <strong>
+                                {{ track.formatted_duration or "Non disponibile" }}
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+
+                {% if track.tags %}
+                    <div class="mt-4">
+                        <h2 class="h6 text-uppercase text-secondary">
+                            Tag
+                        </h2>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for tag in track.tags %}
+                                <a
+                                    class="tag-badge"
+                                    href="{{ url_for('tracks', tag=tag) }}"
+                                >
+                                    {{ tag }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if track.audio_features %}
+                    <div class="mt-5">
+                        <h2 class="h4">
+                            Audio features
+                        </h2>
+
+                        <div class="row g-3">
+                            {% for key, value in track.audio_features.items() %}
+                                <div class="col-6 col-md-4">
+                                    <div class="info-box">
+                                        <span>
+                                            {{ key.replace('_', ' ') }}
+                                        </span>
+
+                                        <strong>
+                                            {{ value }}
+                                        </strong>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <aside class="spotify-card">
+                    <h2 class="h5">
+                        Ascolta su Spotify
+                    </h2>
+
+                    {% if track.spotify_id %}
+                        <p class="text-secondary">
+                            Apri la traccia nell’app Spotify oppure nel browser.
+                        </p>
+
+                        <div class="d-grid gap-2">
+                            <a
+                                class="btn btn-spotify"
+                                href="{{ track.spotify_app_url }}"
+                            >
+                                Apri nell’app Spotify
+                            </a>
+
+                            <a
+                                class="btn btn-outline-dark"
+                                href="{{ track.spotify_web_url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Apri su Spotify Web
+                            </a>
+                        </div>
+                    {% else %}
+                        <p class="text-secondary mb-0">
+                            Spotify ID non disponibile per questa traccia.
+                        </p>
+                    {% endif %}
+                </aside>
+            </div>
+        </div>
+    </section>
+{% endif %}
+{% endblock %}
