@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}
+Ricerca tracce | Music Archive
+{% endblock %}
+
+{% block content %}
+<section class="page-header mb-4">
+    <h1 class="fw-bold">Esplora le tracce</h1>
+
+    <p class="text-secondary mb-0">
+        Cerca per titolo e combina i filtri per genere, anno e tag.
+    </p>
+</section>
+
+<form method="get" class="search-card mb-4">
+    <div class="row g-3">
+        <div class="col-12 col-lg-4">
+            <label for="track-query" class="form-label">
+                Titolo
+            </label>
+
+            <input
+                id="track-query"
+                class="form-control"
+                type="search"
+                name="q"
+                value="{{ query }}"
+                placeholder="Titolo della traccia"
+            >
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-2">
+            <label for="genre-filter" class="form-label">
+                Genere
+            </label>
+
+            <select
+                id="genre-filter"
+                class="form-select"
+                name="genre"
+            >
+                <option value="">Tutti</option>
+
+                {% for genre in filter_options.genres %}
+                    <option
+                        value="{{ genre }}"
+                        {% if selected_genre == genre %}selected{% endif %}
+                    >
+                        {{ genre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-2">
+            <label for="year-filter" class="form-label">
+                Anno
+            </label>
+
+            <select
+                id="year-filter"
+                class="form-select"
+                name="year"
+            >
+                <option value="">Tutti</option>
+
+                {% for year in filter_options.years %}
+                    <option
+                        value="{{ year }}"
+                        {% if selected_year == year|string %}selected{% endif %}
+                    >
+                        {{ year }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-12 col-md-4 col-lg-2">
+            <label for="tag-filter" class="form-label">
+                Tag
+            </label>
+
+            <select
+                id="tag-filter"
+                class="form-select"
+                name="tag"
+            >
+                <option value="">Tutti</option>
+
+                {% for tag in filter_options.tags %}
+                    <option
+                        value="{{ tag }}"
+                        {% if selected_tag == tag %}selected{% endif %}
+                    >
+                        {{ tag }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-12 col-lg-2 d-flex align-items-end">
+            <button
+                class="btn btn-primary w-100"
+                type="submit"
+            >
+                Cerca
+            </button>
+        </div>
+    </div>
+
+    {% if has_filters %}
+        <div class="mt-3">
+            <a
+                class="btn btn-outline-secondary btn-sm"
+                href="{{ url_for('tracks') }}"
+            >
+                Rimuovi filtri
+            </a>
+        </div>
+    {% endif %}
+</form>
+
+{% if has_filters %}
+    <p>
+        Risultati trovati:
+        <strong>{{ total_results | format_number }}</strong>
+    </p>
+
+    <section class="dashboard-card">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                <tr>
+                    <th>Titolo</th>
+                    <th>Artista</th>
+                    <th>Genere</th>
+                    <th>Anno</th>
+                    <th>Durata</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for track in tracks %}
+                    <tr>
+                        <td>
+                            <a
+                                class="item-link fw-semibold"
+                                href="{{ url_for('track_detail', track_id=track._id) }}"
+                            >
+                                {{ track.name }}
+                            </a>
+                        </td>
+
+                        <td>
+                            {% if track.artist_id %}
+                                <a
+                                    class="item-link"
+                                    href="{{ url_for('artist_detail', artist_id=track.artist_id) }}"
+                                >
+                                    {{ track.artist_name }}
+                                </a>
+                            {% else %}
+                                {{ track.artist_name }}
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{ track.genre }}
+                        </td>
+
+                        <td>
+                            {{ track.year or "—" }}
+                        </td>
+
+                        <td>
+                            {{ track.formatted_duration or "—" }}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5">
+                            Nessuna traccia trovata con i filtri selezionati.
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    {% if has_previous or has_next %}
+        <nav class="mt-4" aria-label="Paginazione tracce">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if not has_previous %}disabled{% endif %}">
+                    <a
+                        class="page-link"
+                        href="{{ url_for(
+                            'tracks',
+                            q=query,
+                            genre=selected_genre,
+                            year=selected_year,
+                            tag=selected_tag,
+                            page=page - 1
+                        ) }}"
+                    >
+                        Precedente
+                    </a>
+                </li>
+
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Pagina {{ page }}
+                    </span>
+                </li>
+
+                <li class="page-item {% if not has_next %}disabled{% endif %}">
+                    <a
+                        class="page-link"
+                        href="{{ url_for(
+                            'tracks',
+                            q=query,
+                            genre=selected_genre,
+                            year=selected_year,
+                            tag=selected_tag,
+                            page=page + 1
+                        ) }}"
+                    >
+                        Successiva
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    {% endif %}
+{% else %}
+    <div class="empty-state">
+        <h2 class="h5">Avvia una ricerca</h2>
+
+        <p class="mb-0 text-secondary">
+            Inserisci un titolo oppure seleziona uno o più filtri.
+        </p>
+    </div>
+{% endif %}
+{% endblock %}
