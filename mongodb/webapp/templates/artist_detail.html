@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ artist.name }} | Music Archive
+{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="{{ url_for('artists') }}">
+                Artisti
+            </a>
+        </li>
+
+        <li class="breadcrumb-item active">
+            {{ artist.name }}
+        </li>
+    </ol>
+</nav>
+
+<section class="hero-section artist-hero mb-5">
+    <span class="detail-label text-white-50">
+        Artista
+    </span>
+
+    <h1 class="display-5 fw-bold">
+        {{ artist.name }}
+    </h1>
+
+    <p class="lead mb-0">
+        {{ total_results | format_number }}
+        tracce presenti nell’archivio
+    </p>
+</section>
+
+<section class="dashboard-card">
+    <h2 class="section-title">
+        Tracce dell’artista
+    </h2>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+            <tr>
+                <th>Titolo</th>
+                <th>Genere</th>
+                <th>Anno</th>
+                <th>Durata</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for track in tracks %}
+                <tr>
+                    <td>
+                        <a
+                            class="item-link fw-semibold"
+                            href="{{ url_for('track_detail', track_id=track._id) }}"
+                        >
+                            {{ track.name }}
+                        </a>
+                    </td>
+
+                    <td>
+                        {{ track.genre or "—" }}
+                    </td>
+
+                    <td>
+                        {{ track.year or "—" }}
+                    </td>
+
+                    <td>
+                        {{ track.formatted_duration or "—" }}
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">
+                        Nessuna traccia associata all’artista.
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% if has_previous or has_next %}
+    <nav class="mt-4" aria-label="Paginazione tracce artista">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if not has_previous %}disabled{% endif %}">
+                <a
+                    class="page-link"
+                    href="{{ url_for(
+                        'artist_detail',
+                        artist_id=artist._id,
+                        page=page - 1
+                    ) }}"
+                >
+                    Precedente
+                </a>
+            </li>
+
+            <li class="page-item disabled">
+                <span class="page-link">
+                    Pagina {{ page }}
+                </span>
+            </li>
+
+            <li class="page-item {% if not has_next %}disabled{% endif %}">
+                <a
+                    class="page-link"
+                    href="{{ url_for(
+                        'artist_detail',
+                        artist_id=artist._id,
+                        page=page + 1
+                    ) }}"
+                >
+                    Successiva
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endif %}
+{% endblock %}
