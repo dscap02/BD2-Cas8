@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if mode == "edit" %}Modifica traccia{% else %}Nuova traccia{% endif %} | Music Archive
+{% endblock %}
+
+{% block content %}
+<section class="page-header mb-4">
+    <h1 class="fw-bold">
+        {% if mode == "edit" %}
+            Modifica traccia
+        {% else %}
+            Nuova traccia
+        {% endif %}
+    </h1>
+
+    <p class="text-secondary mb-0">
+        Gestisci le informazioni della traccia e, se disponibile, usa Spotify per compilare automaticamente i dati principali.
+    </p>
+</section>
+
+<form method="post" class="dashboard-card admin-form">
+    <h2 class="section-title">Spotify</h2>
+
+    <div class="row g-3 align-items-end">
+        <div class="col-12 col-lg-9">
+            <label class="form-label" for="spotify_url">
+                Link Spotify
+            </label>
+
+            <input
+                class="form-control"
+                id="spotify_url"
+                name="spotify_url"
+                value="{{ track.spotify_id if track else '' }}"
+                placeholder="Incolla qui il link della traccia Spotify"
+            >
+
+            <small class="text-secondary">
+                Puoi incollare un link traccia Spotify o un link album che contiene una traccia evidenziata.
+            </small>
+        </div>
+
+        <div class="col-12 col-lg-3">
+            <button
+                class="btn btn-outline-primary w-100"
+                type="button"
+                id="spotify_preview_button"
+            >
+                Compila da Spotify
+            </button>
+        </div>
+    </div>
+
+    <div
+        id="spotify_preview_status"
+        class="spotify-preview-status mt-3 d-none"
+    ></div>
+
+    <hr class="my-4">
+
+    <h2 class="section-title">Informazioni principali</h2>
+
+    <div class="row g-3">
+        <div class="col-12 col-lg-6">
+            <label class="form-label" for="name">
+                Titolo
+            </label>
+
+            <input
+                class="form-control"
+                id="name"
+                name="name"
+                value="{{ track.name if track else '' }}"
+                placeholder="Titolo della traccia"
+                required
+            >
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <label class="form-label" for="artist_name">
+                Artista
+            </label>
+
+            <input
+                class="form-control"
+                id="artist_name"
+                name="artist_name"
+                value="{{ track.artist_name if track else '' }}"
+                placeholder="Nome dell'artista"
+                required
+            >
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <label class="form-label" for="album_name">
+                Album
+            </label>
+
+            <input
+                class="form-control"
+                id="album_name"
+                name="album_name"
+                value="{{ track.album_name if track else '' }}"
+                placeholder="Nome dell'album"
+            >
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <label class="form-label" for="album_release_date">
+                Data di uscita album
+            </label>
+
+            <input
+                class="form-control"
+                id="album_release_date"
+                name="album_release_date"
+                value="{{ track.album_release_date if track else '' }}"
+                placeholder="Es. 2015-06-12"
+            >
+        </div>
+
+        <input
+            type="hidden"
+            id="album_image_url"
+            name="album_image_url"
+            value="{{ track.album_image_url if track else '' }}"
+        >
+
+        <div class="col-12 col-md-6">
+            <label class="form-label" for="genre">
+                Genere
+            </label>
+
+            <input
+                class="form-control"
+                id="genre"
+                name="genre"
+                value="{{ track.genre if track else '' }}"
+                placeholder="Es. Rock, Pop, Electronic"
+                required
+            >
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label class="form-label" for="tags">
+                Tag
+            </label>
+
+            <input
+                class="form-control"
+                id="tags"
+                name="tags"
+                value="{{ track.tags if track else '' }}"
+                placeholder="Es. rock, 80s, classic"
+            >
+        </div>
+
+        <div class="col-12 col-md-4">
+            <label class="form-label" for="year">
+                Anno
+            </label>
+
+            <input
+                class="form-control"
+                id="year"
+                name="year"
+                type="number"
+                min="1900"
+                max="2100"
+                value="{{ track.year if track else '' }}"
+                placeholder="Es. 2015"
+            >
+        </div>
+
+        <div class="col-6 col-md-4">
+            <label class="form-label" for="duration_minutes">
+                Minuti
+            </label>
+
+            <input
+                class="form-control"
+                id="duration_minutes"
+                name="duration_minutes"
+                type="number"
+                min="0"
+                value="{{ track.duration_minutes if track else '' }}"
+                placeholder="3"
+            >
+        </div>
+
+        <div class="col-6 col-md-4">
+            <label class="form-label" for="duration_seconds">
+                Secondi
+            </label>
+
+            <input
+                class="form-control"
+                id="duration_seconds"
+                name="duration_seconds"
+                type="number"
+                min="0"
+                max="59"
+                value="{{ track.duration_seconds if track else '' }}"
+                placeholder="42"
+            >
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <h2 class="section-title">Audio features opzionali</h2>
+
+    <p class="text-secondary">
+        Le audio features possono essere inserite manualmente se disponibili. Se non le conosci, puoi lasciarle vuote.
+    </p>
+
+    {% set audio = track.audio_features if track else {} %}
+
+    <div class="row g-3">
+        {% for field in [
+            'danceability',
+            'energy',
+            'key',
+            'loudness',
+            'mode',
+            'speechiness',
+            'acousticness',
+            'instrumentalness',
+            'liveness',
+            'valence',
+            'tempo'
+        ] %}
+            <div class="col-12 col-md-4">
+                <label class="form-label" for="{{ field }}">
+                    {{ field.replace('_', ' ') | title }}
+                </label>
+
+                <input
+                    class="form-control"
+                    id="{{ field }}"
+                    name="{{ field }}"
+                    value="{{ audio.get(field, '') }}"
+                    placeholder="Opzionale"
+                >
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 mt-4">
+        <button class="btn btn-primary" type="submit">
+            {% if mode == "edit" %}
+                Salva modifiche
+            {% else %}
+                Crea traccia
+            {% endif %}
+        </button>
+
+        <a
+            class="btn btn-outline-secondary"
+            href="{{ url_for('admin_dashboard') }}"
+        >
+            Annulla
+        </a>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

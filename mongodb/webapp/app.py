@@ -10,9 +10,31 @@ from typing import Optional
 import requests
 from PIL import Image, UnidentifiedImageError
 from bson import ObjectId
-from flask import Flask, abort, render_template, request
+from dotenv import load_dotenv
+from flask import (
+    Flask,
+    abort,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
+
+from admin_service import (
+    create_track,
+    delete_track_if_safe,
+    get_spotify_preview,
+    get_track_form_data,
+    register_listening_event,
+    update_track,
+)
+
+
+load_dotenv()
 
 
 MONGO_URI = os.getenv(
@@ -24,6 +46,9 @@ DB_NAME = os.getenv(
     "MONGO_DB_NAME",
     "music_archive",
 )
+
+SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
+SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 
 RESULTS_PER_PAGE = 20
 
@@ -45,6 +70,11 @@ DEFAULT_THEME = {
 
 
 app = Flask(__name__)
+
+app.secret_key = os.getenv(
+    "FLASK_SECRET_KEY",
+    "music-archive-dev-secret-key",
+)
 
 mongo_client = MongoClient(
     MONGO_URI,
@@ -119,7 +149,8 @@ def normalize_spotify_id(value) -> Optional[str]:
     Estrae uno Spotify track ID da:
     - ID semplice;
     - URI spotify:track:ID;
-    - URL open.spotify.com/track/ID.
+    - URL open.spotify.com/track/ID;
+    - URL album con highlight=spotify:track:ID.
     """
     if value is None:
         return None
@@ -129,17 +160,18 @@ def normalize_spotify_id(value) -> Optional[str]:
     if not raw_value:
         return None
 
-    if raw_value.startswith("spotify:track:"):
-        raw_value = raw_value.rsplit(":", 1)[-1]
+    patterns = [
+        r"highlight=spotify%3Atrack%3A([A-Za-z0-9]{22})",
+        r"highlight=spotify:track:([A-Za-z0-9]{22})",
+        r"spotify:track:([A-Za-z0-9]{22})",
+        r"open\.spotify\.com/(?:intl-[a-z]{2}/)?track/([A-Za-z0-9]{22})",
+    ]
 
-    if "open.spotify.com/track/" in raw_value:
-        raw_value = raw_value.split(
-            "open.spotify.com/track/",
-            1,
-        )[1]
+    for pattern in patterns:
+        match = re.search(pattern, raw_value)
 
-        raw_value = raw_value.split("?", 1)[0]
-        raw_value = raw_value.split("/", 1)[0]
+        if match:
+            return match.group(1)
 
     if re.fullmatch(r"[A-Za-z0-9]{22}", raw_value):
         return raw_value
@@ -196,6 +228,7 @@ def relative_luminance(
     """
     Calcola la luminanza relativa approssimata del colore.
     """
+
     def linearize(channel: int) -> float:
         value = channel / 255
 
@@ -240,10 +273,7 @@ def extract_dominant_color(
     image_content: bytes,
 ) -> tuple[int, int, int]:
     """
-    Estrae un colore dominante dalla copertina.
-
-    Vengono privilegiati colori frequenti e sufficientemente saturi,
-    evitando per quanto possibile bianco, nero e grigi neutri.
+    Estrae un colore dominante dalla copertina Spotify.
     """
     with Image.open(BytesIO(image_content)) as image:
         image = image.convert("RGB")
@@ -337,9 +367,7 @@ def get_spotify_theme(
 ) -> dict:
     """
     Recupera la copertina tramite Spotify oEmbed ed estrae
-    il colore da applicare alla navbar.
-
-    In caso di errore viene restituito il tema viola predefinito.
+    il colore da applicare alla pagina della traccia.
     """
     if not spotify_id:
         return DEFAULT_THEME.copy()
@@ -873,6 +901,9 @@ def get_artist_tracks(
 
 @app.route("/")
 def index():
+    """
+    Mostra la dashboard principale.
+    """
     error = None
 
     try:
@@ -913,6 +944,9 @@ def index():
 
 @app.route("/tracks")
 def tracks():
+    """
+    Ricerca tracce con filtri combinabili.
+    """
     title_query = request.args.get(
         "q",
         "",
@@ -1006,6 +1040,9 @@ def tracks():
 
 @app.route("/tracks/<track_id>")
 def track_detail(track_id):
+    """
+    Mostra il dettaglio di una traccia.
+    """
     try:
         track_object_id = parse_object_id(track_id)
         track = get_track_detail(track_object_id)
@@ -1038,6 +1075,9 @@ def track_detail(track_id):
 
 @app.route("/artists")
 def artists():
+    """
+    Ricerca artisti.
+    """
     query = request.args.get(
         "q",
         "",
@@ -1091,6 +1131,9 @@ def artists():
 
 @app.route("/artists/<artist_id>")
 def artist_detail(artist_id):
+    """
+    Mostra il dettaglio dell'artista e le tracce associate.
+    """
     artist_object_id = parse_object_id(
         artist_id
     )
@@ -1142,8 +1185,369 @@ def artist_detail(artist_id):
     )
 
 
+@app.route("/admin")
+def admin_dashboard():
+    """
+    Dashboard amministratore con operazioni controllate.
+    """
+    counts = {
+        "tracks": db.tracks.count_documents({}),
+        "artists": db.artists.count_documents({}),
+        "genres_tags": db.genres_tags.count_documents({}),
+        "listeners": db.listeners.count_documents({}),
+        "listening_history": db.listening_history.count_documents({}),
+    }
+
+    recent_tracks = list(
+        db.tracks.find(
+            {},
+            {
+                "_id": 1,
+                "name": 1,
+                "year": 1,
+                "created_at": 1,
+            },
+        )
+        .sort("_id", -1)
+        .limit(10)
+    )
+
+    return render_template(
+        "admin.html",
+        counts=counts,
+        recent_tracks=recent_tracks,
+        page_theme=None,
+    )
+
+
+@app.route("/admin/tracks/new", methods=["GET", "POST"])
+def admin_create_track():
+    """
+    Form amministratore per inserire una nuova traccia.
+    """
+    if request.method == "POST":
+        try:
+            track_id = create_track(
+                db,
+                request.form,
+            )
+
+            flash(
+                "Traccia creata correttamente.",
+                "success",
+            )
+
+            return redirect(
+                url_for(
+                    "track_detail",
+                    track_id=track_id,
+                )
+            )
+
+        except ValueError as error:
+            flash(
+                str(error),
+                "danger",
+            )
+
+        except PyMongoError as error:
+            app.logger.exception(
+                "Errore MongoDB durante la creazione della traccia"
+            )
+
+            flash(
+                f"Errore MongoDB: {error}",
+                "danger",
+            )
+
+    return render_template(
+        "admin_track_form.html",
+        mode="create",
+        track=None,
+        page_theme=None,
+    )
+
+
+@app.route("/admin/tracks/<track_id>/edit", methods=["GET", "POST"])
+def admin_edit_track(track_id):
+    """
+    Form amministratore per modificare una traccia.
+    """
+    track_object_id = parse_object_id(track_id)
+
+    if request.method == "POST":
+        try:
+            update_track(
+                db,
+                track_object_id,
+                request.form,
+            )
+
+            flash(
+                "Traccia aggiornata correttamente.",
+                "success",
+            )
+
+            return redirect(
+                url_for(
+                    "track_detail",
+                    track_id=track_object_id,
+                )
+            )
+
+        except ValueError as error:
+            flash(
+                str(error),
+                "danger",
+            )
+
+        except PyMongoError as error:
+            app.logger.exception(
+                "Errore MongoDB durante la modifica della traccia"
+            )
+
+            flash(
+                f"Errore MongoDB: {error}",
+                "danger",
+            )
+
+    try:
+        track = get_track_form_data(
+            db,
+            track_object_id,
+        )
+
+    except ValueError:
+        abort(404)
+
+    return render_template(
+        "admin_track_form.html",
+        mode="edit",
+        track=track,
+        page_theme=None,
+    )
+
+
+@app.route("/admin/tracks/<track_id>/delete", methods=["POST"])
+def admin_delete_track(track_id):
+    """
+    Elimina una traccia solo se non ha ascolti collegati.
+    """
+    track_object_id = parse_object_id(track_id)
+
+    try:
+        success, message = delete_track_if_safe(
+            db,
+            track_object_id,
+        )
+
+        flash(
+            message,
+            "success" if success else "warning",
+        )
+
+    except PyMongoError as error:
+        app.logger.exception(
+            "Errore MongoDB durante la cancellazione della traccia"
+        )
+
+        flash(
+            f"Errore MongoDB: {error}",
+            "danger",
+        )
+
+    return redirect(
+        url_for("admin_dashboard")
+    )
+
+
+@app.route("/admin/listening/new", methods=["GET", "POST"])
+def admin_create_listening_event():
+    """
+    Registra un ascolto collegando listener esistente e traccia esistente.
+    """
+    if request.method == "POST":
+        try:
+            success, message = register_listening_event(
+                db=db,
+                track_id_value=request.form.get("track_id", ""),
+                listener_id_value=request.form.get("listener_id", ""),
+            )
+
+            flash(
+                message,
+                "success" if success else "warning",
+            )
+
+            if success:
+                return redirect(
+                    url_for("admin_dashboard")
+                )
+
+        except PyMongoError as error:
+            app.logger.exception(
+                "Errore MongoDB durante la registrazione ascolto"
+            )
+
+            flash(
+                f"Errore MongoDB: {error}",
+                "danger",
+            )
+
+    return render_template(
+        "admin_listening.html",
+        page_theme=None,
+    )
+
+
+@app.route("/admin/api/spotify/preview")
+def admin_spotify_preview():
+    """
+    Restituisce metadati Spotify per auto-compilare il form traccia.
+    """
+    spotify_url = request.args.get(
+        "url",
+        "",
+    ).strip()
+
+    success, payload = get_spotify_preview(
+        spotify_value=spotify_url,
+        client_id=SPOTIFY_CLIENT_ID,
+        client_secret=SPOTIFY_CLIENT_SECRET,
+    )
+
+    if not success:
+        return jsonify(
+            {
+                "success": False,
+                "message": payload,
+            }
+        ), 400
+
+    return jsonify(
+        {
+            "success": True,
+            "track": payload,
+        }
+    )
+
+
+@app.route("/admin/api/tracks/search")
+def admin_search_tracks_api():
+    """
+    Ricerca tracce per autocomplete nella dashboard admin.
+    """
+    query = request.args.get(
+        "q",
+        "",
+    ).strip()
+
+    if len(query) < 2:
+        return jsonify([])
+
+    pipeline = [
+        {
+            "$match": {
+                "name": {
+                    "$regex": re.escape(query),
+                    "$options": "i",
+                }
+            }
+        },
+        {
+            "$lookup": {
+                "from": "artists",
+                "localField": "artist_id",
+                "foreignField": "_id",
+                "as": "artist",
+            }
+        },
+        {
+            "$unwind": {
+                "path": "$artist",
+                "preserveNullAndEmptyArrays": True,
+            }
+        },
+        {
+            "$limit": 8,
+        },
+        {
+            "$project": {
+                "_id": {
+                    "$toString": "$_id",
+                },
+                "name": 1,
+                "artist_name": {
+                    "$ifNull": [
+                        "$artist.name",
+                        "Artista sconosciuto",
+                    ]
+                },
+                "year": 1,
+            }
+        },
+    ]
+
+    results = list(
+        db.tracks.aggregate(
+            pipeline,
+            allowDiskUse=True,
+        )
+    )
+
+    return jsonify(results)
+
+
+@app.route("/admin/api/listeners/search")
+def admin_search_listeners_api():
+    """
+    Ricerca listener per autocomplete nella dashboard admin.
+    """
+    query = request.args.get(
+        "q",
+        "",
+    ).strip()
+
+    if len(query) < 2:
+        return jsonify([])
+
+    search_filter = {
+        "original_user_id": {
+            "$regex": re.escape(query),
+            "$options": "i",
+        }
+    }
+
+    listeners = list(
+        db.listeners.find(
+            search_filter,
+            {
+                "_id": 1,
+                "original_user_id": 1,
+            },
+        )
+        .limit(8)
+    )
+
+    results = [
+        {
+            "_id": str(listener["_id"]),
+            "original_user_id": listener.get(
+                "original_user_id",
+                "",
+            ),
+        }
+        for listener in listeners
+    ]
+
+    return jsonify(results)
+
+
 @app.template_filter("format_number")
 def format_number(value):
+    """
+    Formatta i numeri con separatore delle migliaia.
+    """
     try:
         return f"{int(value):,}".replace(
             ",",
@@ -1156,6 +1560,9 @@ def format_number(value):
 
 @app.template_filter("format_datetime")
 def format_datetime(value):
+    """
+    Rende leggibile una data ISO.
+    """
     if not value:
         return ""
 

@@ -2,3 +2,7 @@
 .venv/*
 pyvenv.cfg
 .DS_Store
+.env
+dataset
+mongodb/webapp/__pycache__/
+.python-version

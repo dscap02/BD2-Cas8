@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin | Music Archive
+{% endblock %}
+
+{% block content %}
+<section class="page-header mb-4">
+    <h1 class="fw-bold">Dashboard amministratore</h1>
+
+    <p class="text-secondary mb-0">
+        Gestisci operazioni controllate su tracce e ascolti.
+    </p>
+</section>
+
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-xl">
+        <div class="stat-card">
+            <span class="stat-label">Tracce</span>
+            <strong class="stat-value">
+                {{ counts.tracks | format_number }}
+            </strong>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl">
+        <div class="stat-card">
+            <span class="stat-label">Artisti</span>
+            <strong class="stat-value">
+                {{ counts.artists | format_number }}
+            </strong>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl">
+        <div class="stat-card">
+            <span class="stat-label">Generi/tag</span>
+            <strong class="stat-value">
+                {{ counts.genres_tags | format_number }}
+            </strong>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl">
+        <div class="stat-card">
+            <span class="stat-label">Listener</span>
+            <strong class="stat-value">
+                {{ counts.listeners | format_number }}
+            </strong>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-6 col-xl">
+        <div class="stat-card">
+            <span class="stat-label">Ascolti</span>
+            <strong class="stat-value">
+                {{ counts.listening_history | format_number }}
+            </strong>
+        </div>
+    </div>
+</div>
+
+<section class="dashboard-card mb-4">
+    <h2 class="section-title">Azioni rapide</h2>
+
+    <div class="d-flex flex-wrap gap-2">
+        <a
+            class="btn btn-primary"
+            href="{{ url_for('admin_create_track') }}"
+        >
+            Nuova traccia
+        </a>
+
+        <a
+            class="btn btn-outline-primary"
+            href="{{ url_for('admin_create_listening_event') }}"
+        >
+            Registra ascolto
+        </a>
+
+        <a
+            class="btn btn-outline-secondary"
+            href="{{ url_for('tracks') }}"
+        >
+            Cerca tracce
+        </a>
+    </div>
+</section>
+
+<section class="dashboard-card">
+    <h2 class="section-title">Tracce recenti</h2>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+            <tr>
+                <th>Titolo</th>
+                <th>Anno</th>
+                <th class="text-end">Azioni</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for track in recent_tracks %}
+                <tr>
+                    <td>
+                        <a
+                            class="item-link fw-semibold"
+                            href="{{ url_for('track_detail', track_id=track._id) }}"
+                        >
+                            {{ track.name }}
+                        </a>
+                    </td>
+
+                    <td>
+                        {{ track.year or "—" }}
+                    </td>
+
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-2">
+                            <a
+                                class="btn btn-outline-primary btn-sm"
+                                href="{{ url_for('admin_edit_track', track_id=track._id) }}"
+                            >
+                                Modifica
+                            </a>
+
+                            <form
+                                method="post"
+                                action="{{ url_for('admin_delete_track', track_id=track._id) }}"
+                                onsubmit="return confirm('Vuoi davvero eliminare questa traccia? L’operazione sarà bloccata se esistono ascolti collegati.');"
+                            >
+                                <button
+                                    type="submit"
+                                    class="btn btn-outline-danger btn-sm"
+                                >
+                                    Elimina
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">
+                        Nessuna traccia disponibile.
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
