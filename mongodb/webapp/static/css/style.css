@@ -8,6 +8,12 @@
     --border: #e5e6ef;
     --spotify: #1db954;
     --spotify-dark: #159544;
+    --spotify-background: #f4fff7;
+
+    --page-accent: var(--primary);
+    --page-accent-dark: var(--primary-dark);
+    --page-text: #ffffff;
+    --page-muted-text: rgba(255, 255, 255, 0.72);
 }
 
 body {
@@ -22,10 +28,45 @@ body {
         var(--primary-dark),
         var(--primary)
     );
+    transition:
+        background 0.35s ease,
+        box-shadow 0.35s ease;
+}
+
+.track-themed .navbar {
+    background: linear-gradient(
+        135deg,
+        var(--page-accent-dark),
+        var(--page-accent)
+    );
+    box-shadow: 0 0.5rem 1.5rem
+        color-mix(
+            in srgb,
+            var(--page-accent) 28%,
+            transparent
+        );
 }
 
 .navbar-brand {
     letter-spacing: 0.02em;
+}
+
+.track-themed .navbar-brand,
+.track-themed .navbar .nav-link {
+    color: var(--page-text) !important;
+}
+
+.track-themed .navbar .nav-link {
+    opacity: 0.75;
+}
+
+.track-themed .navbar .nav-link:hover,
+.track-themed .navbar .nav-link:focus {
+    opacity: 1;
+}
+
+.track-themed .navbar-toggler {
+    border-color: var(--page-muted-text);
 }
 
 .hero-section {
@@ -61,6 +102,10 @@ body {
     border-radius: 1rem;
     background: var(--surface);
     box-shadow: 0 0.5rem 1.5rem rgba(37, 38, 58, 0.06);
+}
+
+.detail-card {
+    padding: 2rem;
 }
 
 .stat-card {
@@ -105,9 +150,17 @@ body {
     text-decoration: none;
 }
 
+.track-themed .item-link {
+    color: var(--page-accent-dark);
+}
+
 .item-link:hover {
     color: var(--primary);
     text-decoration: underline;
+}
+
+.track-themed .item-link:hover {
+    color: var(--page-accent);
 }
 
 .info-box {
@@ -139,26 +192,92 @@ body {
     font-size: 0.85rem;
     font-weight: 600;
     text-decoration: none;
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.track-themed .tag-badge {
+    color: var(--page-accent-dark);
+    background: color-mix(
+        in srgb,
+        var(--page-accent) 14%,
+        white
+    );
 }
 
 .tag-badge:hover {
     color: white;
     background: var(--primary);
+    transform: translateY(-1px);
+}
+
+.track-themed .tag-badge:hover {
+    color: var(--page-text);
+    background: var(--page-accent);
 }
 
 .spotify-card {
     position: sticky;
     top: 1.5rem;
-    padding: 1.5rem;
-    border: 1px solid var(--border);
-    border-radius: 1rem;
-    background: #f7fff9;
+    padding: 1.25rem;
+    border: 1px solid #cfe8d7;
+    border-radius: 1.25rem;
+    background: var(--spotify-background);
+    box-shadow: 0 0.75rem 2rem rgba(29, 185, 84, 0.1);
+}
+
+.spotify-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.spotify-icon {
+    display: inline-flex;
+    width: 2.75rem;
+    height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    color: white;
+    background: var(--spotify);
+    font-size: 1.45rem;
+}
+
+.spotify-icon i {
+    line-height: 1;
+}
+
+.spotify-player-wrapper {
+    overflow: hidden;
+    border-radius: 0.9rem;
+    background: #121212;
+}
+
+.spotify-embed {
+    display: block;
+    width: 100%;
+    min-height: 152px;
+    border: 0;
+    border-radius: 0.9rem;
+}
+
+.spotify-unavailable {
+    padding: 1rem;
+    border: 1px dashed #b9d8c2;
+    border-radius: 0.75rem;
+    background: white;
 }
 
 .btn-spotify {
     border-color: var(--spotify);
     color: white;
     background: var(--spotify);
+    font-weight: 600;
 }
 
 .btn-spotify:hover,
@@ -186,6 +305,7 @@ body {
 
 .btn-outline-primary:hover {
     border-color: var(--primary);
+    color: white;
     background: var(--primary);
 }
 
@@ -196,6 +316,14 @@ body {
 .page-item.active .page-link {
     border-color: var(--primary);
     background: var(--primary);
+}
+
+.breadcrumb a {
+    color: var(--primary);
+}
+
+.track-themed .breadcrumb a {
+    color: var(--page-accent-dark);
 }
 
 code {
@@ -225,5 +353,13 @@ code {
 
     .detail-card {
         padding: 1.25rem;
+    }
+
+    .spotify-card {
+        padding: 1rem;
+    }
+
+    .spotify-card-header {
+        align-items: flex-start;
     }
 }

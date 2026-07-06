@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1"
@@ -17,15 +18,33 @@
     >
 
     <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        rel="stylesheet"
+    >
+
+    <link
         rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}"
     >
 </head>
 
-<body>
+<body
+    class="{% if page_theme %}track-themed{% endif %}"
+    {% if page_theme %}
+        style="
+            --page-accent: {{ page_theme.accent }};
+            --page-accent-dark: {{ page_theme.accent_dark }};
+            --page-text: {{ page_theme.text }};
+            --page-muted-text: {{ page_theme.muted_text }};
+        "
+    {% endif %}
+>
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+        <a
+            class="navbar-brand fw-bold"
+            href="{{ url_for('index') }}"
+        >
             Music Archive
         </a>
 
@@ -41,7 +60,10 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="mainNavbar">
+        <div
+            class="collapse navbar-collapse"
+            id="mainNavbar"
+        >
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     <a
@@ -76,8 +98,12 @@
 
 <main class="container py-4">
     {% if error %}
-        <div class="alert alert-danger" role="alert">
-            <strong>Errore MongoDB:</strong> {{ error }}
+        <div
+            class="alert alert-danger"
+            role="alert"
+        >
+            <strong>Errore:</strong>
+            {{ error }}
         </div>
     {% endif %}
 
@@ -86,7 +112,10 @@
 
 <footer class="footer py-4 mt-5">
     <div class="container text-center">
-        <p class="mb-1">Music Archive NoSQL</p>
+        <p class="mb-1">
+            Music Archive NoSQL
+        </p>
+
         <small>
             Dashboard Flask collegata a MongoDB in sola lettura.
         </small>

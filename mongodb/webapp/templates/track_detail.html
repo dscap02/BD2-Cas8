@@ -6,7 +6,10 @@
 
 {% block content %}
 {% if track %}
-    <nav aria-label="breadcrumb" class="mb-4">
+    <nav
+        aria-label="breadcrumb"
+        class="mb-4"
+    >
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
                 <a href="{{ url_for('tracks') }}">
@@ -14,7 +17,10 @@
                 </a>
             </li>
 
-            <li class="breadcrumb-item active">
+            <li
+                class="breadcrumb-item active"
+                aria-current="page"
+            >
                 {{ track.name }}
             </li>
         </ol>
@@ -47,27 +53,30 @@
                 {% endif %}
 
                 <div class="row g-3 mt-2">
-                    <div class="col-6 col-md-4">
+                    <div class="col-12 col-sm-6 col-md-4">
                         <div class="info-box">
                             <span>Genere</span>
+
                             <strong>
                                 {{ track.genre or "Non disponibile" }}
                             </strong>
                         </div>
                     </div>
 
-                    <div class="col-6 col-md-4">
+                    <div class="col-12 col-sm-6 col-md-4">
                         <div class="info-box">
                             <span>Anno</span>
+
                             <strong>
                                 {{ track.year or "Non disponibile" }}
                             </strong>
                         </div>
                     </div>
 
-                    <div class="col-6 col-md-4">
+                    <div class="col-12 col-sm-6 col-md-4">
                         <div class="info-box">
                             <span>Durata</span>
+
                             <strong>
                                 {{ track.formatted_duration or "Non disponibile" }}
                             </strong>
@@ -102,7 +111,7 @@
 
                         <div class="row g-3">
                             {% for key, value in track.audio_features.items() %}
-                                <div class="col-6 col-md-4">
+                                <div class="col-12 col-sm-6 col-md-4">
                                     <div class="info-box">
                                         <span>
                                             {{ key.replace('_', ' ') }}
@@ -121,20 +130,46 @@
 
             <div class="col-12 col-lg-4">
                 <aside class="spotify-card">
-                    <h2 class="h5">
-                        Ascolta su Spotify
-                    </h2>
+                    <div class="spotify-card-header">
+                        <span
+                            class="spotify-icon"
+                            aria-hidden="true"
+                        >
+                            <i class="bi bi-spotify"></i>
+                        </span>
+
+                        <div>
+                            <h2 class="h5 mb-1">
+                                Ascolta su Spotify
+                            </h2>
+
+                            <p class="text-secondary small mb-0">
+                                Riproduci la traccia direttamente dalla pagina.
+                            </p>
+                        </div>
+                    </div>
 
                     {% if track.spotify_id %}
-                        <p class="text-secondary">
-                            Apri la traccia nell’app Spotify oppure nel browser.
-                        </p>
+                        <div class="spotify-player-wrapper">
+                            <iframe
+                                class="spotify-embed"
+                                src="https://open.spotify.com/embed/track/{{ track.spotify_id }}?utm_source=generator"
+                                width="100%"
+                                height="152"
+                                frameborder="0"
+                                allowfullscreen
+                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                loading="lazy"
+                                title="Lettore Spotify di {{ track.name }}"
+                            ></iframe>
+                        </div>
 
-                        <div class="d-grid gap-2">
+                        <div class="d-grid gap-2 mt-3">
                             <a
                                 class="btn btn-spotify"
                                 href="{{ track.spotify_app_url }}"
                             >
+                                <i class="bi bi-spotify me-2"></i>
                                 Apri nell’app Spotify
                             </a>
 
@@ -144,13 +179,16 @@
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
+                                <i class="bi bi-box-arrow-up-right me-2"></i>
                                 Apri su Spotify Web
                             </a>
                         </div>
                     {% else %}
-                        <p class="text-secondary mb-0">
-                            Spotify ID non disponibile per questa traccia.
-                        </p>
+                        <div class="spotify-unavailable">
+                            <p class="text-secondary mb-0">
+                                Spotify ID non disponibile per questa traccia.
+                            </p>
+                        </div>
                     {% endif %}
                 </aside>
             </div>
