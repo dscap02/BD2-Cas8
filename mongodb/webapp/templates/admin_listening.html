@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}
+Registra ascolto | Music Archive
+{% endblock %}
+
+{% block content %}
+<section class="page-header mb-4">
+    <h1 class="fw-bold">Registra ascolto</h1>
+
+    <p class="text-secondary mb-0">
+        Seleziona una traccia e un listener esistente per aggiungere un nuovo ascolto alla cronologia.
+    </p>
+</section>
+
+<form method="post" class="dashboard-card admin-form">
+    <div class="mb-4 autocomplete-field">
+        <label class="form-label" for="track_search">
+            Traccia
+        </label>
+
+        <input
+            class="form-control"
+            id="track_search"
+            autocomplete="off"
+            placeholder="Cerca una traccia per titolo"
+            required
+        >
+
+        <input
+            type="hidden"
+            id="track_id"
+            name="track_id"
+        >
+
+        <div
+            id="track_suggestions"
+            class="autocomplete-suggestions d-none"
+        ></div>
+
+        <small class="text-secondary">
+            Scrivi almeno due caratteri e seleziona una traccia dai risultati.
+        </small>
+    </div>
+
+    <div class="mb-4 autocomplete-field">
+        <label class="form-label" for="listener_search">
+            Listener
+        </label>
+
+        <input
+            class="form-control"
+            id="listener_search"
+            autocomplete="off"
+            placeholder="Cerca un listener"
+            required
+        >
+
+        <input
+            type="hidden"
+            id="listener_id"
+            name="listener_id"
+        >
+
+        <div
+            id="listener_suggestions"
+            class="autocomplete-suggestions d-none"
+        ></div>
+
+        <small class="text-secondary">
+            Seleziona un listener esistente dalla lista dei suggerimenti.
+        </small>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-primary" type="submit">
+            Registra ascolto
+        </button>
+
+        <a
+            class="btn btn-outline-secondary"
+            href="{{ url_for('admin_dashboard') }}"
+        >
+            Annulla
+        </a>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}
