@@ -1,0 +1,38 @@
+services:
+  mongo:
+    image: mongo:8.0
+    container_name: music_archive_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: music_archive_web
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "5050:5000"
+    env_file:
+      - .env
+    environment:
+      MONGO_URI: mongodb://mongo:27017/
+      MONGO_DB_NAME: music_archive
+      FLASK_HOST: 0.0.0.0
+      FLASK_PORT: 5000
+    volumes:
+      - .:/app
+
+volumes:
+  mongo_data:
