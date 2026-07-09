@@ -1573,8 +1573,25 @@ def format_datetime(value):
 
 
 if __name__ == "__main__":
+    flask_host = os.getenv(
+        "FLASK_HOST",
+        "127.0.0.1",
+    )
+
+    flask_port = int(
+        os.getenv(
+            "FLASK_PORT",
+            "5000",
+        )
+    )
+
+    flask_debug = os.getenv(
+        "FLASK_DEBUG",
+        "true",
+    ).lower() == "true"
+
     app.run(
-        host="127.0.0.1",
-        port=5000,
-        debug=True,
+        host=flask_host,
+        port=flask_port,
+        debug=flask_debug,
     )
